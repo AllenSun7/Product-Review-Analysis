@@ -8,13 +8,14 @@ Reviews on Amazon Echo, Google Home and Apple HomePod
 Install **[redis](https://redis.io/topics/quickstart)**
 Start Redis under its path, ex.`/Users/allen/redis-stable`
 > src/redis-server redis.conf
+Shut down server
+> redis-cli shutdown
 
 ### Setup proxypool
 
 > cd proxy/proxypool
 
 In the folder of `proxypool`, vim file `settings.py` 
-
 setup the `PASSWORD` which is Redis password; if no password, leave it `None`
 
 
