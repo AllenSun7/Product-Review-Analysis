@@ -17,9 +17,8 @@ Shut down server
 
 > cd proxy/proxypool
 
-In the folder of `proxypool`, vim file `settings.py` 
-setup the `PASSWORD` which is Redis password; if no password, leave it `None`
-
+In the folder of `proxypool`, vim file `settings.py` , setup the `PASSWORD` which is Redis password; if no password, leave it `None`
+>  REDIS_PASSWORD = None
 
 ### Run proxy and API
 
