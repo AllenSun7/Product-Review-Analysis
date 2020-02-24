@@ -17,8 +17,8 @@ def input_xpath():
     "input attributes"
     #scrapy path
     top_url = "https://www.bestbuy.com"
-    url_detail = "https://www.bestbuy.com/site/reviews/apple-homepod-space-gray/5902410?variant=A"
-    id_list_xpath = "//ul[class='reviews-list']/li"
+    url_detail = "https://www.google.com/search?q=apple+homepod+review&oq=apple+home+pod+&aqs=chrome.1.69i57j0l7.5075j0j7&sourceid=chrome&ie=UTF-8"
+    id_list_xpath = "//div[@class='pla-ikpd__modal-content-container']/div[@class='cXr9rd']/div[@class='NYWkjc']/div[2]/div/text()"
     next_page_xpath = "//li[@class='page next']/a/@href"
     #xpath
     xpath_dic = {
@@ -97,20 +97,6 @@ def parse_data(top_url, id_list_xpath, url_detail, xpath_dic, item_output, next_
 
 def html_request(url_detail):
     #return html request header, some web would ban coocikes
-    cookies = 'v=3; \
-                iuuid=1A6E888B4A4B29B16FBA1299108DBE9CDCB327A9713C232B36E4DB4FF222CF03; \
-                webp=true; \
-                ci=1%2C%E5%8C%97%E4%BA%AC; \
-                __guid=26581345.3954606544145667000.1530879049181.8303; \
-                _lxsdk_cuid=1646f808301c8-0a4e19f5421593-5d4e211f-100200-1646f808302c8; \
-                _lxsdk=1A6E888B4A4B29B16FBA1299108DBE9CDCB327A9713C232B36E4DB4FF222CF03; \
-                monitor_count=1; \
-                _lxsdk_s=16472ee89ec-de2-f91-ed0%7C%7C5; \
-                __mta=189118996.1530879050545.1530936763555.1530937843742.18'
-    cookie = {}
-    for line in cookies.split(';'):
-        name, value = cookies.strip().split('=', 1)
-        cookie[name] = value
     user_agent = UserAgent().random
     HEADERS = {'User-Agent':user_agent,
                 'Referer': "www.google.com"}
@@ -118,14 +104,16 @@ def html_request(url_detail):
     attempts = 1
     while attempts < 50:
         try:
-            response = requests.get(url_detail, cookies=cookie, headers=HEADERS, proxies=proxies, timeout=10)
-            break
+            session = requests.session()
+            response = session.get(url_detail, headers=HEADERS, proxies=proxies, timeout=10)
+            html_etree = etree.HTML(response.content.decode('utf-8'))    
+            return html_etree
+
         except requests.exceptions.RequestException as e:
             print(e)
-            print("HTML Request attemp: %i" % attempts)
+            print("HTML Request attempt: %i" % attempts)
             attempts += 1
-    html_etree = etree.HTML(response.content.decode('utf-8'))    
-    return html_etree
+
 
 def main():
     __product()
