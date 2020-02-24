@@ -16,22 +16,20 @@ from proxy import proxy_list
 def input_xpath():
     "input attributes"
     #scrapy path
-    top_url = "https://www.amazon.com"
-    url_detail = "https://www.amazon.com/All-new-Smart-speaker-Alexa-Charcoal/product-reviews/B07NFTVP7P/ref=cm_cr_arp_d_paging_btm_next_501?ie=UTF8&reviewerType=all_reviews&pageNumber=501"
-    id_list_xpath = "//div[@id='cm_cr-review_list']/div[@data-hook='review']/@id"
-    next_page_xpath = "//li[@class='a-last']/a/@href"
+    top_url = "https://www.bestbuy.com"
+    url_detail = "https://www.bestbuy.com/site/reviews/apple-homepod-space-gray/5902410?variant=A"
+    id_list_xpath = "//ul[class='reviews-list']/li"
+    next_page_xpath = "//li[@class='page next']/a/@href"
     #xpath
     xpath_dic = {
-        "rating_xpath": "//i[@data-hook='review-star-rating']/span/text()",
-        "date_xpath": "//span[@data-hook='review-date']/text()",
-        "variation_xpath": "//a[@data-hook='format-strip']/text()",
-        "verified_reviews_xpath": "//span[@data-hook='review-body']/span/text()",
+        "rating_xpath": "//div[@class='c-ratings-reviews-v2 v-small']/i/@alt",
+        "date_xpath": "//div[@class='disclaimer']/time/@title",
+        "verified_reviews_xpath": "//div[@class='line-clamp']/p/text()",
     }
     #info output form match item numbers in xpath
     item_output = {
             "rating": "",
             "date": "",
-            "variation": "",
             "verified_reviews": "",
             }
     return top_url, url_detail, id_list_xpath, xpath_dic, item_output, next_page_xpath
@@ -43,7 +41,9 @@ def __product():
 def parse_data(top_url, id_list_xpath, url_detail, xpath_dic, item_output, next_page_xpath, page=1):
     html_etree = html_request(url_detail)
     id_list = html_etree.xpath(id_list_xpath)
-    id_xpaths = ["//div[@id='%s']" % id_xpath for id_xpath in id_list]
+    print("id_list: ", id_list)
+    print("len(id_list): ", len(id_list))
+    id_xpaths = ["/li[@class='review-item'][%i]" % li_index+1 for li_index in range(len(id_list))]
     data = []
     for id_xpath in id_xpaths:
         item_output_dic = item_output.copy()
@@ -54,20 +54,16 @@ def parse_data(top_url, id_list_xpath, url_detail, xpath_dic, item_output, next_
             item_output_dic.update(item_dic)
         rating = item_output_dic['rating'][0].split(' ')[0]
         date = item_output_dic['date'][0]
-        color = item_output_dic['variation'][0].split(': ')[1]
-        configuration = item_output_dic['variation'][1].split(': ')[1]
         verified_reviews = ' '.join([elem for elem in item_output_dic['verified_reviews']])
         
         output_dic = {
             "rating": rating,
             "date": date,
-            "color": color,
-            "configuration": configuration,
             "verified_reviews": verified_reviews,
         }
         print(output_dic)
-        data.append([rating, date, color, configuration, verified_reviews])
-    with open('amazon_echo.csv', 'a+', newline='') as csv_file:
+        data.append([rating, date, verified_reviews])
+    with open('apple_homepod.csv', 'a+', newline='') as csv_file:
         spamwriter = csv.writer(csv_file)
         for data_row in data: 
             spamwriter.writerow(data_row)
@@ -101,12 +97,34 @@ def parse_data(top_url, id_list_xpath, url_detail, xpath_dic, item_output, next_
 
 def html_request(url_detail):
     #return html request header, some web would ban coocikes
+    cookies = 'v=3; \
+                iuuid=1A6E888B4A4B29B16FBA1299108DBE9CDCB327A9713C232B36E4DB4FF222CF03; \
+                webp=true; \
+                ci=1%2C%E5%8C%97%E4%BA%AC; \
+                __guid=26581345.3954606544145667000.1530879049181.8303; \
+                _lxsdk_cuid=1646f808301c8-0a4e19f5421593-5d4e211f-100200-1646f808302c8; \
+                _lxsdk=1A6E888B4A4B29B16FBA1299108DBE9CDCB327A9713C232B36E4DB4FF222CF03; \
+                monitor_count=1; \
+                _lxsdk_s=16472ee89ec-de2-f91-ed0%7C%7C5; \
+                __mta=189118996.1530879050545.1530936763555.1530937843742.18'
+    cookie = {}
+    for line in cookies.split(';'):
+        name, value = cookies.strip().split('=', 1)
+        cookie[name] = value
     user_agent = UserAgent().random
     HEADERS = {'User-Agent':user_agent,
                 'Referer': "www.google.com"}
     proxies = proxy_list.get_proxy()
-    response = requests.get(url_detail, headers=HEADERS, proxies=proxies)
-    html_etree = etree.HTML(response.content.decode('utf-8'))
+    attempts = 1
+    while attempts < 50:
+        try:
+            response = requests.get(url_detail, cookies=cookie, headers=HEADERS, proxies=proxies, timeout=10)
+            break
+        except requests.exceptions.RequestException as e:
+            print(e)
+            print("HTML Request attemp: %i" % attempts)
+            attempts += 1
+    html_etree = etree.HTML(response.content.decode('utf-8'))    
     return html_etree
 
 def main():
