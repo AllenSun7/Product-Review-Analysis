@@ -3,12 +3,13 @@ Reviews on Amazon Echo, Google Home and Apple HomePod
 
 
 
-### Install Redis
+### Redis
 
 Install **[redis](https://redis.io/topics/quickstart)**
 
-Start Redis under its path, e.g.`/Users/allen/redis-stable`
+Start Redis under its path, e.g. `/Users/allen/redis-stable`
 > src/redis-server redis.conf
+
 Shut down server
 > redis-cli shutdown
 
