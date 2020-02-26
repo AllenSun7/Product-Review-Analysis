@@ -16,9 +16,9 @@ from proxy import proxy_list
 def input_xpath():
     "input attributes"
     #scrapy path
-    top_url = "https://www.bestbuy.com"
-    url_detail = "https://www.google.com/search?q=apple+homepod+review&oq=apple+home+pod+&aqs=chrome.1.69i57j0l7.5075j0j7&sourceid=chrome&ie=UTF-8"
-    id_list_xpath = "//div[@class='pla-ikpd__modal-content-container']/div[@class='cXr9rd']/div[@class='NYWkjc']/div[2]/div/text()"
+    top_url = "https://www.google.com"
+    url_detail = "https://www.google.com/search?safe=active&sxsrf=ALeKk00Iv5DVSTq8EEHkIs4aloKTrDpDXA%3A1582608611729&ei=47BUXt6NLMv4-gTFxLXwBA&q=apple+homepod+reviews&oq=apple+homepod+reviews&gs_l=psy-ab.3..0l3j0i22i30l6.18669.20227..20435...0.2..0.107.689.7j1......0....1..gws-wiz.......0i71j35i39j0i20i263j0i67.CDVwVnXlanc&ved=0ahUKEwiei_vA_OvnAhVLvJ4KHUViDU4Q4dUDCAs&uact=5"
+    id_list_xpath = "////div[@class='pla-ikpd__modal-content']/div[@class='pla-ikpd-modal-reviews__reviews-modal']/div[@class='Y2yoUb']/div[2]/div[@id='pla-ikpd__pla-dru']/div[1]/div[@class='VATqJc'][1]/div[@jsname='xsCKlc']/div[@jsname='an9Zef']/text()"
     next_page_xpath = "//li[@class='page next']/a/@href"
     #xpath
     xpath_dic = {

@@ -47,7 +47,7 @@ class GoogleInfo():
                 time.sleep(1)
                 try:
                     self.get_info(browser, count)
-                    #print("At page: %i" % count)
+                    print("At page: %i" % count)
                     count += 1
                 except Exception as e:
                     print("<p>Error: %s</p>" % str(e))
@@ -102,7 +102,7 @@ class GoogleInfo():
                 verified_reviews = browser.find_element_by_xpath(reviews_xpath).text
             except Exception as e:
                 print("<p>Error: %s</p>" % str(e))
-                
+
             print(rating)
             print(title)
             print(date)
